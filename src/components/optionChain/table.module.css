@@ -1,0 +1,49 @@
+#puts{
+background-color:#ff3d00;
+border:2px solid #ff1744;
+font-weight: bold;
+font-size: 14px;
+
+}
+#calls{
+    background-color:#76ff03;
+    border:2px #8bc34a;
+    font-weight: bold;
+    font-size:14px
+  
+}
+#tableheader{
+    background-color:#ffc107;
+    font-weight: bold;
+    font-size:14px
+   
+
+}
+
+#tableContainer{
+    width:96%;
+    margin:10px;
+    margin-left:40px;
+    font-weight:bold
+   
+}
+
+#tableBody{
+    background-color:#ffffff;  
+    font-weight: bold;
+    /* font-size:10px */
+}
+
+#strikePrice{
+    /* background-color:#aed581 */
+    color:#2979ff;
+    font-weight: bolder;
+    font-size:14px
+}
+
+#tableBodyCell{
+    font-size: 12px;
+}
+
+
+
