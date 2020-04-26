@@ -122,7 +122,7 @@ export default function SimpleSelect(props) {
           >
            
            {  
-           callsStrikePrices ?   callsStrikePrices.map((strikes,index) => <MenuItem  key={index}  value={strikes}>{strikes}</MenuItem>) : <MenuItem   value={""}>{"No Data"}</MenuItem>
+           callsStrikePrices.length>0 ?   callsStrikePrices.map((strikes,index) => <MenuItem  key={index}  value={strikes}>{strikes}</MenuItem>) : <MenuItem   value={""}>{"No Data"}</MenuItem>
            
            }
          
@@ -146,7 +146,7 @@ export default function SimpleSelect(props) {
           >
            
            {  
-           putsStrikePrices ?   putsStrikePrices.map((strikes,index) => <MenuItem  key={index}  value={strikes}>{strikes}</MenuItem>) : <MenuItem   value={""}>{"No Data"}</MenuItem>
+           putsStrikePrices.length>0 ?   putsStrikePrices.map((strikes,index) => <MenuItem  key={index}  value={strikes}>{strikes}</MenuItem>) : <MenuItem   value={""}>{"No Data"}</MenuItem>
            
            }
          

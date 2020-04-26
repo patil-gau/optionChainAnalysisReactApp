@@ -18,7 +18,7 @@ export default function SwitchLabels(props) {
 
 
     useEffect(() => {
-      props.disableFunction(!state.checked)
+      props.fullTableFunction(state.checked)
       
     }, [state.checked]);
   
@@ -26,7 +26,7 @@ export default function SwitchLabels(props) {
      
         <FormControlLabel
           control={<Switch checked={state.checked} onChange={handleChange} name="checked"  />}
-          label="LIVE"
+          label="DashBoard"
         />
     );
   }

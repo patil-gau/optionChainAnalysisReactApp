@@ -13,36 +13,32 @@ function OptionChain() {
    const [errorState, seterrorState] = useState(false)
    const [isLoading, setisLoading] = useState(false);
    const [errorMessage, seterrorMessage] = useState("")
-   const [experies, setexperies] = useState([])
-   const [optionsData, setoptionsData] = useState({});
-   const [islive, setislive] = useState(true);
-
-   const [selectedDate, setselectedDate] = useState("")
-   const [selectedExpiry, setselectedExpiry] = useState("");
-
    const [tableValues, settableValues] = useState([]);
 
    const [niftyValue, setniftyValue] = useState(0.0000);
-
+   const [tableModeState, settableModeState] = useState(true);
    const [lastSyncTime, setlastSyncTime] = useState("null");
 
-   const [liveNiftyValue, setliveNiftyValue] = useState(0);
-
-   const [liveSyncTime, setliveSyncTime] = useState("null");
-
-//    const  liveStatus=(liveStatus)=>{
-
-//     setislive(liveStatus)
-
-//    }
 
 
-   const getselectedValues=(date,time,expiry)=>{
 
-       setisLoading(true)
-       console.log(date)
-       console.log(time)
-       console.log(expiry)
+const tableMode=(tableMode)=>{
+
+    settableModeState(tableMode)
+
+}
+
+
+
+   const getselectedValues=(date,time,expiry,tableState)=>{
+
+    setisLoading(true)
+    console.log(date)
+    console.log(time)
+    console.log(expiry) 
+      
+  if(tableState==false){  
+    
      if(expiry=="currentExpiry")
      {
 
@@ -57,6 +53,7 @@ function OptionChain() {
 
     }).catch((err)=>{
         console.log(err)
+        setisLoading(false)
     })
 
      }  
@@ -73,75 +70,73 @@ else
 
     }).catch((err)=>{
         console.log(err)
+        setisLoading(false)
     })
 }
 
-   }
+}
 
 
-//   const setMode=(state)=>{
-//       setislive(state)
-     
+
+else{
+    setisLoading(true)
+
+    if(expiry=="currentExpiry")
+    {
 
 
-//   }
+   axios.post("http://127.0.0.1:5000/optionsDashBoard",{"date":date,"time":time,"expiry":expiry}).then((res)=>{
+       console.log(res.data)
+       // console.log(res.data.data.records.niftyPrice)
+       setniftyValue(res.data.filtered.niftyPrice)
+       setlastSyncTime(res.data.filtered.time)
+       settableValues(res.data.filtered.data)
+       setisLoading(false)
 
-//   const setliveExperies=(expiry)=>{
+   }).catch((err)=>{
+       console.log(err)
+       setisLoading(false)
+   })
 
-//     selectedExpiry(expiry)
+    }  
+else
+{
 
-//   }
+   axios.post("http://127.0.0.1:5000/optionsDashBoard",{"date":date,"time":time,"expiry":expiry}).then((res)=>{
+       console.log(res.data)
+       console.log(res.data.data.records.niftyPrice)
+       setniftyValue(res.data.data.records.niftyPrice)
+       setlastSyncTime(res.data.time)
+       settableValues(res.data.data.records.values)
+       setisLoading(false)
 
+   }).catch((err)=>{
+       console.log(err)
+       setisLoading(false)
+   })
+}
 
-//    useEffect(() => {
-//             const interval = setInterval(() =>{
-//             setisLoading(true)
-//               axios.get("http://127.0.0.1:5000/options").then(
-               
-//                 (res)=>{
-//                  setexperies(res.data[0].experies)
-//                  setoptionsData(res.data[0].filtered.data)
-//                  setliveNiftyValue(res.data[0].niftyValue)
-//                  setliveSyncTime(res.data[0].time)
-//                  console.log(res.data[0].filtered.data)
-//                  setisLoading(false)
-                  
-//                 }).catch(
-//                   err =>console.log(err))
-        
-        
-//             },18000)
-          
-            
-          //  return clearInterval(interval)   
-               
-        //   },[islive])
-
-
-//     if(islive){
-//         return (
-
-        
-//             <div id={styleSheets.optionPage}>
-//              {/* <OptionContext.Provider value={experies}> */}
-//             <HeaderComponent  selectedValues={getselectedValues} experies={experies} nifty={liveNiftyValue} lastSync={liveSyncTime} mode={setMode} type={"live"} expiry={setliveExperies}></HeaderComponent> 
-//            {/* {isLoading ?  */}
-//         { !isLoading ? <TableComponent  values={optionsData}></TableComponent> : <Loader></Loader>}
-//            {/* : <Loader></Loader>} */}
-//            {/* </OptionContext.Provider>    */}
-//             </div>
-//         )
+}
 
 
-//     }
-// else{
+
+}
+
+
+
+// useEffect(() => {
+
+
+// },[tableModeState])
+
+
 
     return (
 
         
         <div id={styleSheets.optionPage}>
          {/* <OptionContext.Provider value={experies}> */}
-        <HeaderComponent  selectedValues={getselectedValues} nifty={niftyValue} lastSync={lastSyncTime} ype={"notlive"}></HeaderComponent> 
+        <HeaderComponent  selectedValues={getselectedValues} nifty={niftyValue} lastSync={lastSyncTime} tableMode={tableMode}  ></HeaderComponent> 
        {/* {isLoading ?  */}
     { !isLoading ? <TableComponent  values={tableValues}></TableComponent> : <Loader></Loader>}
        {/* : <Loader></Loader>} */}
@@ -151,7 +146,6 @@ else
 
 }
 
-// }
 
 export default OptionChain
 

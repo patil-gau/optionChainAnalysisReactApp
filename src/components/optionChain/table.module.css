@@ -2,20 +2,21 @@
 background-color:#ff3d00;
 border:2px solid #ff1744;
 font-weight: bold;
-font-size: 14px;
+font-size: 12px;
 
 }
 #calls{
     background-color:#76ff03;
     border:2px #8bc34a;
     font-weight: bold;
-    font-size:14px
+    font-size:12px
   
 }
 #tableheader{
     background-color:#ffc107;
     font-weight: bold;
-    font-size:14px
+    font-size:10px;
+    width:5px
    
 
 }
@@ -38,11 +39,32 @@ font-size: 14px;
     /* background-color:#aed581 */
     color:#2979ff;
     font-weight: bolder;
-    font-size:14px
+    font-size:11px
+}
+
+#ltp{
+    color:#2979ff;
+    font-size: 11px;
+    font-weight: bold;
+   
+}
+
+#changeNegative{
+    color:#f44336; 
+    font-size: 11px;
+    font-weight: bold;
+}
+
+#changePositive{
+    color:#8BC34A;
+    font-size: 11px;
+    font-weight: bold;
 }
 
 #tableBodyCell{
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    width:11px;
 }
 
 

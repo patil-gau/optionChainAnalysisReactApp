@@ -99,7 +99,7 @@ const classes = useStyles();
 
   return (
     <div>
-      <Button variant="outlined" style={{backgroundColor:"#FF9800"}} onClick={handleClickOpen}>
+      <Button variant="outlined" style={{backgroundColor:"#F50057",color:"white"}} onClick={handleClickOpen}>
        Top 4 Sum of OI
       </Button>
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>

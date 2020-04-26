@@ -112,9 +112,9 @@ export default  function ApexChart(props) {
         
       },
       yaxis:[ {
-        tickAmount:6,
+        tickAmount:10,
         title: {
-          text: 'Advances/Declines'
+          text: 'Ratio and Nifty'
         },
         tooltip: {
           enabled: true
@@ -126,6 +126,7 @@ export default  function ApexChart(props) {
         // },
       },
        { 
+         tickAmount:10,
          seriesName: 'Nifty',
           opposite: true,
           // labels: {
@@ -146,8 +147,8 @@ export default  function ApexChart(props) {
         position: 'top',
         horizontalAlign: 'left',
         floating: true,
-        offsetY: -25,
-        offsetX: -5
+        offsetY: -30,
+        offsetX: -20
       }
 
     },

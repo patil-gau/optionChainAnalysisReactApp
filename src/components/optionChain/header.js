@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 240,
+    minWidth: 150,
   },
 }));
 
@@ -73,7 +73,6 @@ export default function CenteredGrid(props) {
   var [state, setstate] = useState(initialState)
   const [date, setdate] = useState("")
   const [experies, setexperies] = useState([]);
-  const [liveExperies, setliveExperies] = useState([])
   const [times, settimes] = useState([])
 
   const [selectedTime, setselectedTime] = useState("")
@@ -81,13 +80,14 @@ export default function CenteredGrid(props) {
   const [selectedExpiry, setselectedExpiry] = useState("");
  
 
+  const fullTableFunction=(tableMode)=>{
+
+    setstate(tableMode)
+    props.selectedValues(date,selectedTime,selectedExpiry,tableMode)
+
+
+  }
   
-
-  const disableAllSelections=(checkedState)=>{
-
-     setstate(!checkedState)
-    //  props.mode(checkedState) 
-   }
 
 
   const handleDateSelected=(selectedDate)=>{
@@ -118,21 +118,12 @@ export default function CenteredGrid(props) {
        }
        else{
         setselectedTime(time)
-        props.selectedValues(date,time,selectedExpiry)
+        props.selectedValues(date,time,selectedExpiry,state)
        }
 
 
   }
 
-
-  // useEffect(() => {
-  //   if(props.type=="live")
-  //   {
-  //     setliveExperies(props.experies)
-  //   }
-    
-    
-  // })
 
 
 
@@ -140,10 +131,8 @@ export default function CenteredGrid(props) {
 
        setselectedExpiry(expiry)
 
-       props.selectedValues(date,selectedTime,expiry)
-        // console.log(date)
-        // console.log(selectedTime)
-        // console.log(expiry)
+       props.selectedValues(date,selectedTime,expiry,state)
+
       }
 
     
@@ -165,20 +154,21 @@ export default function CenteredGrid(props) {
         <Grid item xs={2} >
           <Paper className={classes.paper} id={styleSheet.container}>Date</Paper>
           <Paper className={classes.paper} >    
-           <MaterialUIPickers displayState={state} handleDate={handleDateSelected}></MaterialUIPickers>
+           <MaterialUIPickers  handleDate={handleDateSelected}></MaterialUIPickers>
           </Paper>
         </Grid>
         <Grid item xs={2}>
           <Paper className={classes.paper} id={styleSheet.container}>Time</Paper>
           <Paper className={classes.paper} id={styleSheet.panelheader}>
-          <ControlledOpenSelect id={styleSheet.experyHeader} liveExperies={[]}  handleTime={handleSelectedTime} displayState={state} type={"time"} timeDropdown={times}></ControlledOpenSelect>
+          <ControlledOpenSelect id={styleSheet.experyHeader} liveExperies={props.experies} mode={props.type} handleTime={handleSelectedTime}  type={"time"} timeDropdown={times}></ControlledOpenSelect>
           
           </Paper>
         </Grid>
         <Grid item xs={2}>
           <Paper className={classes.paper} id={styleSheet.container}>Experies</Paper>
           <Paper className={classes.paper} id={styleSheet.panelheader}>
-          <ControlledOpenSelect id={styleSheet.experyHeader} liveExperies={liveExperies} handleExpiry={handleSelectedExpiry} displayState={state} expiryDropdown={experies}   type={"expiry"}></ControlledOpenSelect>
+           
+          <ControlledOpenSelect id={styleSheet.experyHeader} liveExperies={props.experies} mode={props.type} handleExpiry={handleSelectedExpiry}  expiryDropdown={experies}   type={"expiry"}></ControlledOpenSelect>
           </Paper>
         </Grid>
         <Grid item xs={2}>
@@ -187,12 +177,13 @@ export default function CenteredGrid(props) {
         </Grid>
         <Grid item xs={2}>
           <Paper className={classes.paper} id={styleSheet.container}>Last Sync</Paper>
+          
             <Paper className={classes.paper} id={styleSheet.time}>{props.lastSync}</Paper>
         </Grid>
         <Grid item xs={2}>
           <Paper className={classes.paper} id={styleSheet.container}>Data Mode</Paper>
          <Paper className={classes.paper} id={styleSheet.nifty}>
-           <center><Switch disableFunction={disableAllSelections}></Switch></center>
+           <center><Switch fullTableFunction={fullTableFunction}></Switch></center>
            </Paper>
         </Grid>
       </Grid>
@@ -214,36 +205,28 @@ function ControlledOpenSelect(props) {
 
   const [open, setOpen] = React.useState(false);
 
-  const [isDisabled, setisDisabled] = useState(false);
-
   const [expirydropdownValues, setexpirydropdownValues] = useState([])
 
   const [timedropdownValues, settimedropdownValues] = useState([]);
 
-  const [liveSelectedExpiry, setliveSelectedExpiry] = useState("");
 
-  const [liveExperies, setliveExperies] = useState([])
 
 
 //sets dropdown values
   useEffect(() => {
 
+       if(props.type=="expiry"){
+    
+    
+        setexpirydropdownValues(props.expiryDropdown)
+       }
+    
+       else{
   
+       
+        settimedropdownValues(props.timeDropdown)
+       }
 
-   if(props.type=="expiry"){
-
-    setexpirydropdownValues(props.expiryDropdown)
-   }
-  //  else if (props.liveExperies){
-  //   setliveExperies(props.liveExperies)
-  //  }
-
-   else{
-    setisDisabled(props.displayState) 
-   
-    settimedropdownValues(props.timeDropdown)
-   }
-  
   
   }, [props])
 
@@ -251,7 +234,11 @@ function ControlledOpenSelect(props) {
 
 
 
+
   const handleChange = (event) => {
+
+
+
     if(props.type=="expiry"){
       
       setselectedExpiry(event.target.value)
@@ -277,10 +264,7 @@ function ControlledOpenSelect(props) {
   };
 
 
-  // var experies=useContext(OptionsContext)
-  // console.log(experies)
 
-  if(isDisabled==false){
 
     if(props.type=="expiry"){
 
@@ -297,7 +281,7 @@ function ControlledOpenSelect(props) {
               onOpen={handleOpen}
               value={selectedExpiry}
               onChange={handleChange}
-              disabled={isDisabled}
+              
             >
              
              
@@ -324,7 +308,7 @@ function ControlledOpenSelect(props) {
               onOpen={handleOpen}
               value={selectedTime}
               onChange={handleChange}
-              disabled={isDisabled}
+              
             >
              
              
@@ -339,35 +323,7 @@ function ControlledOpenSelect(props) {
 
     
 
-  }
-
-  else{
-
-    return (
-      <div>
-       
-        <FormControl  className={classes.formControl}  >
-         
-          <Select
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open}
-            onClose={handleClose}
-            onOpen={handleOpen}
-            value={liveSelectedExpiry}
-            onChange={handleChange}
-            disabled={isDisabled}
-          >
-            {/* {console.log(experies)} */}
-           
-     { liveExperies.length>0 ? liveExperies.map((ele,index)=><MenuItem  key={index} value={ele}>{ele}</MenuItem>):<MenuItem  key={"None"} value={"None"}>{"No Data"}</MenuItem>}
   
-    }
-          </Select>
-        </FormControl>
-      </div>
-    );
-  }
 
 
   
@@ -387,8 +343,7 @@ function ControlledOpenSelect(props) {
 function MaterialUIPickers(props) {
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(moment(new Date()).format('YYYY-MM-DD'));
-  
-  const [isDisabled, setisDisabled] = useState(false);
+
   var formatedDate;
 
 
@@ -406,11 +361,6 @@ function MaterialUIPickers(props) {
 
   };
 
-  useEffect(() => {
-
-    setisDisabled(props.displayState)
-
-  },[props])
 
   
 
@@ -424,7 +374,7 @@ function MaterialUIPickers(props) {
     <MuiPickersUtilsProvider utils={DateFnsUtils} >
 
         <KeyboardDatePicker
-          disabled={isDisabled}
+         
           id="date-picker-dialog"
           // minDate={Date('2020-04-05T21:11:54')}
           format="yyyy-MM-dd"

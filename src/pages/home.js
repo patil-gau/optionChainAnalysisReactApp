@@ -7,8 +7,9 @@ import 'date-fns';
 import axios from 'axios';
 import Moment from 'moment'
 import Loader from '../components/loader/loader';
-import Test from '../components/liveGraphs/test';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import TableComponent from '../components/optionChain/table.js';
 
 
 
@@ -36,14 +37,30 @@ export default function FullWidthGrid() {
   const [ratioValues, setratio] = useState([])
   const [xAxisForAdvances, setxAxisForAdvances] = useState([]);
   const [loading, setloading] = useState(false);
+  const [liveNiftyValue, setliveNiftyValue] = useState(0);
+  const [liveSyncTime, setliveSyncTime] = useState("null");
+  const [liveType, setliveType] = useState(true)
+  const [experies, setexperies] = useState([])
+  const [optionsData, setoptionsData] = useState({});
 
   
+const disableFunction=(state)=>{
+  
+  console.log(`props to parent ${state}`)
+  setliveType(state)
+
+}
+
+
 
   useEffect(() => {
-    const interval = setInterval(async() =>{
-      setloading(true)
-    
-     await axios.post("http://127.0.0.1:5000/liveGraphs",{"date":todayDate}).then(
+ 
+    console.log(`use effect state ${liveType}`)
+
+    const interval = setInterval(() =>{
+    setloading(true)
+    console.log(liveType)
+        axios.post("http://127.0.0.1:5000/liveGraphs",{"date":todayDate}).then(
        
         (res)=>{
          
@@ -63,48 +80,137 @@ export default function FullWidthGrid() {
           err =>console.log(err))
 
 
-    },180000)
-  
+          axios.get("http://127.0.0.1:5000/options").then(
+             
+            (res)=>{
+             setexperies(res.data[0].experies)
+             setoptionsData(res.data[0].filtered.data)
+             setliveNiftyValue(res.data[0].filtered.niftyPrice)
+             setliveSyncTime(res.data[0].filtered.time)
+             console.log(res.data[0])
+             setloading(false)
+              
+            }).catch(
+              err =>console.log(err))   
+
+
+        
+
+
+    },18000)
     
-  //  return clearInterval(interval)   
+    return () => {
+      clearTimeout(interval)
+ }   
+
        
-  },[])
-  return (
+  },[liveType])
+
+
+  if(liveType==true){
+
+    return (
    
-    <div className={classes.root}>
-     
-      <br></br>
-   
-      
-    { loading ? <Loader></Loader> : <div> <Grid container > 
-      <Grid item xs={1}  >
-        
-        </Grid>  
-    <Grid item xs={5} > 
-      <NiftyChart  xaxis={xAxisForAdvances} nifty={ratioValuesNifty} ratio={ratioValues} ></NiftyChart> 
-    </Grid> 
-    <Grid item xs={1}  >
-        
-        </Grid> 
-    
-     <Grid item xs={4}  >
-         <AdvDecChart xaxis={xAxisForAdvances}  advances={advValues} declines={decValues} ></AdvDecChart>
+      <div className={classes.root}>
+       
+        <br></br>
+
+    { loading ? <Loader></Loader> 
+      : 
+       <> <Grid container > 
+      <Grid item xs={12}  >
+        <SwitchLabels initialState={liveType} mode={disableFunction}></SwitchLabels>
         </Grid>
 
-      <Grid item xs={1}  >
-         
-        </Grid>   
+        <TableComponent  values={optionsData}></TableComponent> 
 
-        {/* <Grid item xs={6}  >
-         <Test xaxis={xAxisForAdvances}  advances={advValues} declines={decValues} ></Test>
-        </Grid> */}
-
-      </Grid>
-      </div>
-   }          
+        </Grid>
+    </>
+    }  
     </div>
-  );
+    );  
+
+
+  }
+
+  else
+  {
+    return (
+   
+      <div className={classes.root}>
+       
+        <br></br>
+     
+        
+      { loading ? <Loader></Loader> : <div> <Grid container > 
+        <Grid item xs={12}  >
+        <SwitchLabels initialState={liveType} mode={disableFunction}></SwitchLabels>
+        </Grid>
+      <Grid item xs={5} > 
+        <NiftyChart  xaxis={xAxisForAdvances} nifty={ratioValuesNifty} ratio={ratioValues} ></NiftyChart> 
+      </Grid> 
+      <Grid item xs={1}  >
+          
+          </Grid> 
+      
+       <Grid item xs={5}  >
+           <AdvDecChart xaxis={xAxisForAdvances}  advances={advValues} declines={decValues} ></AdvDecChart>
+          </Grid>
+
+        </Grid>
+        </div>
+     }          
+      </div>
+    );
+    
+
+  }
+
+
+  
 }
 
 
 
+
+
+
+
+
+
+
+
+function SwitchLabels(props) {
+  const [state, setState] = React.useState({
+    checked: true,
+    
+  });
+
+  const handleChange = (event) => {
+
+    setState({ ...state, [event.target.name]: event.target.checked });
+    // console.log("state changed")
+    console.log(` switch comp state ${event.target.checked}`)
+    props.mode(event.target.checked)
+   
+
+  };
+
+
+  // useEffect(() => {
+  //   console.log(state.checked)
+  //   props.mode(state.checked)
+    
+  // }, [state.checked]);
+
+  return (
+   <>
+      <FormControlLabel
+        control={<Switch  checked={props.initialState} onChange={handleChange} name="checked"  />}
+        label="Options"
+      />
+    
+   </>
+  );
+
+}

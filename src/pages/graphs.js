@@ -136,28 +136,128 @@ export default function FullWidthGrid() {
 
   const getStrikePrices=(selectedExpiryParam)=>{
     seterror("")  
-    setselectedExpiry(selectedExpiryParam);
-  
-    axios.post("http://127.0.0.1:5000/strikePrice",{"date":date,"expiry":selectedExpiryParam}).then((response)=>{
-    // console.log(response.data.strikePrices[0].strikePrices)
-     
-     if(selectedExpiryParam=="currentExpiry"){
-      setstrikePrices(response.data.strikePrices)
-      setavgmaxOI(response.data.maxOI)
-     // console.log(response)
-
-     }
-     else{
-     // console.log(response)
-      setavgmaxOI(response.data.maxOI)
-       setstrikePrices(response.data.strikePrices[0].strikePrices)
-     }
-     
     
-   }).catch((err)=>{
-    seterror("something went wrong , may be some program is not running") 
-    console.log(err)
-  })
+    setselectedExpiry(selectedExpiryParam);
+    if(selectedExpiry=="" ||  putsStrikePrice=="" || callsStrikePrice==""){
+      setloading(true)
+
+      axios.post("http://127.0.0.1:5000/strikePrice",{"date":date,"expiry":selectedExpiryParam}).then((response)=>{
+        // console.log(response.data.strikePrices[0].strikePrices)
+         
+         if(selectedExpiryParam=="currentExpiry"){
+          setstrikePrices(response.data.strikePrices)
+          setavgmaxOI(response.data.maxOI)
+         // console.log(response)
+    
+         }
+         else{
+         console.log(response)
+          setavgmaxOI(response.data.maxOI)
+          setstrikePrices(response.data.strikePrices[0].strikePrices)
+         }
+         
+         setloading(false)
+       }).catch((err)=>{
+        seterror("something went wrong , may be some program is not running") 
+        console.log(err)
+      })
+
+    }
+
+    else
+    {
+   
+   
+      setloading(true)
+
+      axios.post("http://127.0.0.1:5000/graphWithExpiryPutsStrikeDate",{"date":date,"expiry":selectedExpiryParam,'strikePrice':putsStrikePrice}).then((res)=>{
+          // console.log(res)
+          const xaxisForAdvances=res.data["advDec"]["xAsis"]
+  
+          const nifty=res.data["ratio"]["yAsisNifty"]
+  
+          const ratio=res.data["ratio"]["yAsisAdvDecRatio"]
+          const advances=res.data["advDec"]["yAsisAdvances"]
+          const declines=res.data["advDec"]["yAsisDeclines"]
+      
+          const oiPuts=res.data["OI"]["puts"]
+          const oiCalls=res.data["OI"]["calls"]
+  
+          const coiPuts=res.data["COI"]["puts"]
+          const coiCalls=res.data["COI"]["calls"]
+  
+          const ivPuts=res.data["IV"]["puts"]
+          const ivCalls=res.data["IV"]["calls"]
+          const optionXaxis=res.data["COI"]["xAxis"]
+
+          setavgmaxOI(res.data.maxOI)
+  
+  
+          setxAxisForAdvances(xaxisForAdvances)
+          setxAxisForOptions(optionXaxis)
+  
+          setratio(ratio)
+          setratioNifty(nifty)
+          setdec(declines)
+          setadv(advances)
+  
+          setOIPuts(oiPuts)
+          setCOIPuts(coiPuts)
+          setIVPuts(ivPuts)
+         
+        
+  
+  
+        }).catch((err)=>{
+          seterror("something went wrong , may be some program is not running") 
+          console.log(err)
+        })
+
+        axios.post("http://127.0.0.1:5000/graphWithExpiryCallsStrikeDate",{"date":date,"expiry":selectedExpiryParam,'strikePrice':callsStrikePrice}).then((res)=>{
+      
+          console.log(res)
+          const xaxisForAdvances=res.data["advDec"]["xAsis"]
+          const nifty=res.data["ratio"]["yAsisNifty"]
+          const ratio=res.data["ratio"]["yAsisAdvDecRatio"]
+          const advances=res.data["advDec"]["yAsisAdvances"]
+          const declines=res.data["advDec"]["yAsisDeclines"]
+          const optionXaxis=res.data["COI"]["xAxis"]  
+    
+          const oiPuts=res.data["OI"]["puts"]
+          const oiCalls=res.data["OI"]["calls"]
+    
+          const coiPuts=res.data["COI"]["puts"]
+          const coiCalls=res.data["COI"]["calls"]
+    
+          const ivPuts=res.data["IV"]["puts"]
+          const ivCalls=res.data["IV"]["calls"]
+    
+          setavgmaxOI(res.data.maxOI)
+          setxAxisForAdvances(xaxisForAdvances)
+          setratio(ratio)
+          setratioNifty(nifty)
+          setdec(declines)
+          setadv(advances)
+          setxAxisForOptions(optionXaxis)
+          setOICalls(oiCalls)
+          setCOICalls(coiCalls)
+          setIVCalls(ivCalls)
+    
+          console.log(coiCalls)
+    
+          setloading(false)  
+    
+       }).catch((err)=>{
+      seterror("something went wrong , may be some program is not running")      
+       setloading(false)
+       console.log(err)
+    })
+
+
+
+    }
+  
+
    
   
 
@@ -165,6 +265,7 @@ export default function FullWidthGrid() {
   }
  
   const getSelectedaPutsStrikePrice=(putsStrikePrice)=>{
+    setputsStrikePrice(putsStrikePrice)
     seterror("") 
     setloading(true)
 
@@ -232,6 +333,7 @@ export default function FullWidthGrid() {
 
    
   const getSelectedaCallsStrikePrice=(callsStrikePrice)=>{
+    setcallsStrikePrice(callsStrikePrice)
     console.log(callsStrikePrice)
     seterror("") 
     setloading(true)
@@ -300,117 +402,117 @@ export default function FullWidthGrid() {
 // },[putsStrikePrice,callsStrikePrice])
 
 
-  const fectchGraphsData=(type)=>{
+//   const fectchGraphsData=(type)=>{
 
-    setloading(true)
-    seterror("") 
-    console.log(callsStrikePrice)
+//     setloading(true)
+//     seterror("") 
+//     console.log(callsStrikePrice)
     
-    if(type=="puts"){
+//     if(type=="puts"){
        
         
-        console.log(callsStrikePrice)
-        axios.post("http://127.0.0.1:5000/graphWithExpiryPutsStrikeDate",{"date":date,"expiry":selectedExpiry,'strikePrice':putsStrikePrice}).then((res)=>{
-        // console.log(res)
-        const xaxisForAdvances=res.data["advDec"]["xAsis"]
+//         console.log(callsStrikePrice)
+//         axios.post("http://127.0.0.1:5000/graphWithExpiryPutsStrikeDate",{"date":date,"expiry":selectedExpiry,'strikePrice':putsStrikePrice}).then((res)=>{
+//         // console.log(res)
+//         const xaxisForAdvances=res.data["advDec"]["xAsis"]
 
-        const nifty=res.data["ratio"]["yAsisNifty"]
+//         const nifty=res.data["ratio"]["yAsisNifty"]
 
-        const ratio=res.data["ratio"]["yAsisAdvDecRatio"]
-        const advances=res.data["advDec"]["yAsisAdvances"]
-        const declines=res.data["advDec"]["yAsisDeclines"]
+//         const ratio=res.data["ratio"]["yAsisAdvDecRatio"]
+//         const advances=res.data["advDec"]["yAsisAdvances"]
+//         const declines=res.data["advDec"]["yAsisDeclines"]
     
-        const oiPuts=res.data["OI"]["puts"]
-        const oiCalls=res.data["OI"]["calls"]
+//         const oiPuts=res.data["OI"]["puts"]
+//         const oiCalls=res.data["OI"]["calls"]
 
-        const coiPuts=res.data["COI"]["puts"]
-        const coiCalls=res.data["COI"]["calls"]
+//         const coiPuts=res.data["COI"]["puts"]
+//         const coiCalls=res.data["COI"]["calls"]
 
-        const ivPuts=res.data["IV"]["puts"]
-        const ivCalls=res.data["IV"]["calls"]
-        const optionXaxis=res.data["COI"]["xAxis"]
+//         const ivPuts=res.data["IV"]["puts"]
+//         const ivCalls=res.data["IV"]["calls"]
+//         const optionXaxis=res.data["COI"]["xAxis"]
 
-        // console.log(coiPuts)
+//         // console.log(coiPuts)
        
         
-        // console.log(nifty)
-        // console.log(oiPuts)
+//         // console.log(nifty)
+//         // console.log(oiPuts)
 
         
 
-        setxAxisForAdvances(xaxisForAdvances)
-        setxAxisForOptions(optionXaxis)
+//         setxAxisForAdvances(xaxisForAdvances)
+//         setxAxisForOptions(optionXaxis)
 
-        setratio(ratio)
-        setratioNifty(nifty)
-        setdec(declines)
-        setadv(advances)
+//         setratio(ratio)
+//         setratioNifty(nifty)
+//         setdec(declines)
+//         setadv(advances)
 
-        setOIPuts(oiPuts)
-        setCOIPuts(coiPuts)
-        setIVPuts(ivPuts)
+//         setOIPuts(oiPuts)
+//         setCOIPuts(coiPuts)
+//         setIVPuts(ivPuts)
        
 
-        setloading(false)
+//         setloading(false)
         
 
 
-      }).catch((err)=>{
-        seterror("something went wrong , may be some program is not running") 
-        setloading(false)
-        console.log(err)
-      })
+//       }).catch((err)=>{
+//         seterror("something went wrong , may be some program is not running") 
+//         setloading(false)
+//         console.log(err)
+//       })
 
-    }
-   else
-   {
+//     }
+//    else
+//    {
 
-    setloading(true)
-    seterror("") 
+//     setloading(true)
+//     seterror("") 
 
-    axios.post("http://127.0.0.1:5000/graphWithExpiryCallsStrikeDate",{"date":date,"expiry":selectedExpiry,'strikePrice':callsStrikePrice}).then((res)=>{
+//     axios.post("http://127.0.0.1:5000/graphWithExpiryCallsStrikeDate",{"date":date,"expiry":selectedExpiry,'strikePrice':callsStrikePrice}).then((res)=>{
       
-      console.log(res)
-      const xaxisForAdvances=res.data["advDec"]["xAsis"]
-      const nifty=res.data["ratio"]["yAsisNifty"]
-      const ratio=res.data["ratio"]["yAsisAdvDecRatio"]
-      const advances=res.data["advDec"]["yAsisAdvances"]
-      const declines=res.data["advDec"]["yAsisDeclines"]
-      const optionXaxis=res.data["COI"]["xAxis"]  
+//       console.log(res)
+//       const xaxisForAdvances=res.data["advDec"]["xAsis"]
+//       const nifty=res.data["ratio"]["yAsisNifty"]
+//       const ratio=res.data["ratio"]["yAsisAdvDecRatio"]
+//       const advances=res.data["advDec"]["yAsisAdvances"]
+//       const declines=res.data["advDec"]["yAsisDeclines"]
+//       const optionXaxis=res.data["COI"]["xAxis"]  
 
-      const oiPuts=res.data["OI"]["puts"]
-      const oiCalls=res.data["OI"]["calls"]
+//       const oiPuts=res.data["OI"]["puts"]
+//       const oiCalls=res.data["OI"]["calls"]
 
-      const coiPuts=res.data["COI"]["puts"]
-      const coiCalls=res.data["COI"]["calls"]
+//       const coiPuts=res.data["COI"]["puts"]
+//       const coiCalls=res.data["COI"]["calls"]
 
-      const ivPuts=res.data["IV"]["puts"]
-      const ivCalls=res.data["IV"]["calls"]
+//       const ivPuts=res.data["IV"]["puts"]
+//       const ivCalls=res.data["IV"]["calls"]
 
       
-      setxAxisForAdvances(xaxisForAdvances)
-      setratio(ratio)
-      setratioNifty(nifty)
-      setdec(declines)
-      setadv(advances)
-      setxAxisForOptions(optionXaxis)
-      setOICalls(oiCalls)
-      setCOICalls(coiCalls)
-      setIVCalls(ivCalls)
+//       setxAxisForAdvances(xaxisForAdvances)
+//       setratio(ratio)
+//       setratioNifty(nifty)
+//       setdec(declines)
+//       setadv(advances)
+//       setxAxisForOptions(optionXaxis)
+//       setOICalls(oiCalls)
+//       setCOICalls(coiCalls)
+//       setIVCalls(ivCalls)
 
-      console.log(coiCalls)
+//       console.log(coiCalls)
 
-      setloading(false)  
+//       setloading(false)  
 
-   }).catch((err)=>{
-   seterror("something went wrong , may be some program is not running")   
-   setloading(false)
-   console.log(err)
-})
+//    }).catch((err)=>{
+//    seterror("something went wrong , may be some program is not running")   
+//    setloading(false)
+//    console.log(err)
+// })
 
-   } 
+//    } 
     
-  }
+//   }
 
 
   return (
@@ -447,7 +549,7 @@ export default function FullWidthGrid() {
  { maxavgOI.length>0 ?
      <Grid item xs={4}>
     
-      <Dialog content={maxavgOI}></Dialog>
+      <Dialog content={maxavgOI} ></Dialog>
         
       </Grid> 
    :
@@ -492,7 +594,7 @@ export default function FullWidthGrid() {
         </Grid>
 
 
-        <Grid item xs={12}  spacing={0}>
+        <Grid item xs={6}  spacing={0}>
         <Container >
         <COI  xaxis={xAxisForOptions} puts={COIValuesPuts}  calls={COIValuesCalls}></COI>
       </Container>
