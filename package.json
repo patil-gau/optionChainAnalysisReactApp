@@ -13,7 +13,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/date-fns": "^2.6.0",
     "apexcharts": "^3.18.1",
-    "axios": "^0.19.2",
+    "axios": "^0.26.1",
     "bootstrap": "^4.4.1",
     "classnames": "^2.2.6",
     "date-fns": "^2.12.0",
